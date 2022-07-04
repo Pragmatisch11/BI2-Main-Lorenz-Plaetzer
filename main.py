@@ -38,10 +38,19 @@ if __name__ == '__main__':
     df = get_dataframe_of_indicatorcode(IndicatorCode)
     pandas.set_option('display.max_rows', df.shape[0] + 1, 'display.max_columns', df.shape[0] +1)
 
+    print(IndicatorCode)
     fig = hm.get_heatmap_alcoholconsumption_btsx(df)
 
     #fig.show()
 
+
+    ### Alex Bereich
+
+    print(df)
+
+
+
+    #### Dash Server
     app = Dash(__name__)
 
     app.layout = html.Div(children=[
@@ -51,10 +60,12 @@ if __name__ == '__main__':
             Dash: A web application framework for your data.
         '''),
 
+        ##
         dcc.Graph(
             id='example-graph',
             figure=fig
         )
+
     ])
     app.run_server(debug=True, use_reloader=False)
     #app.layout = dash_table.DataTable(x.to_dict('records'), [{"name": i, "id": i} for i in x.columns])
