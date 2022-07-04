@@ -5,6 +5,7 @@
 import pandas
 import requests
 import json
+import plotly.express as px
 from dash import Dash, html, dcc
 import heatmaps as hm
 
@@ -45,6 +46,10 @@ if __name__ == '__main__':
 
 
     ### Alex Bereich
+
+    ##Bubble Map für Alkohol Consumption
+    ## Indicator-Code lautet SA_0000001404 (https://ghoapi.azureedge.net/api/SA_0000001404)
+    ##fig1 = px.scatter_geo(df, locations=)
 
     print(df)
 
