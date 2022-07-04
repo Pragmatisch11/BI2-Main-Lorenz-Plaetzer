@@ -33,6 +33,7 @@ def get_dataframe_of_indicatorcode(IndicatorCode):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    print("hello")
     IndicatorCode = get_indicator_code(
         "Alcohol, drinkers only per capita (15+)consumption in litres of pure alcohol")['IndicatorCode']
     df = get_dataframe_of_indicatorcode(IndicatorCode)
