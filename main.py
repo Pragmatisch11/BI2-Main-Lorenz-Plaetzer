@@ -3,14 +3,10 @@
 # Press Umschalt+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import pandas
-import pandas as pd
 import requests
 import json
-import IPython
-import pandasgui as pdg
-import matplotlib.pyplot as plt
-from dash import Dash, html, dcc, dash_table
-import plotly.express as px
+from dash import Dash, html, dcc
+import heatmaps as hm
 
 def get_indicator_code(search):
     r = requests.get("https://ghoapi.azureedge.net/api/Indicator")
@@ -42,33 +38,26 @@ if __name__ == '__main__':
     df = get_dataframe_of_indicatorcode(IndicatorCode)
     pandas.set_option('display.max_rows', df.shape[0] + 1, 'display.max_columns', df.shape[0] +1)
 
-    sub_df = df[["SpatialDim", "NumericValue", "Dim1"]]
+    fig = hm.get_heatmap_alcoholconsumption_btsx(df)
 
-    sub_df = sub_df[sub_df.Dim1 != "BTSX"]
+    #fig.show()
 
-    sub_df = df[["SpatialDim", "NumericValue"]]
-    sub_df = sub_df.groupby(["SpatialDim"]).sum()
+    app = Dash(__name__)
 
-    print(sub_df)
+    app.layout = html.Div(children=[
+        html.H1(children='Hello Dash'),
 
-    #df = df.groupby([''])
+        html.Div(children='''
+            Dash: A web application framework for your data.
+        '''),
 
-    #print(df)
-
-    #fig = px.choropleth(df, locations="iso_alpha",
-    #                   color="")
-
-
-
-
-
-    #app = Dash(__name__)
+        dcc.Graph(
+            id='example-graph',
+            figure=fig
+        )
+    ])
+    app.run_server(debug=True, use_reloader=False)
     #app.layout = dash_table.DataTable(x.to_dict('records'), [{"name": i, "id": i} for i in x.columns])
-    #IPython.Application.d(r.style)
 
-    #r = pandas.read_json(r.text)
-    #pdg.show(r)
-    #print(IndicatorCode)
-    #data = pd.read_csv('')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
