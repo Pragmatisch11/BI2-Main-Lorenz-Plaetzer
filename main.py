@@ -51,24 +51,9 @@ if __name__ == '__main__':
 
     ##Bubble Map für Alkohol Consumption
     ## Indicator-Code lautet SA_0000001404 (https://ghoapi.azureedge.net/api/SA_0000001404)
-    sub1_df = df[["SpatialDim", "NumericValue", "Dim1"]]
-    sub1_df = sub1_df[sub1_df.Dim1 != "BTSX"]
-    sub1_df = sub1_df[sub1_df.Dim1 != "FMLE"]
-    sub1_df['WerteMax'] = sub1_df["NumericValue"].rank()
-    sub1_df = sub1_df.sort_values(by=['WerteMax'], ascending=False)
-    sub1_df = sub1_df[["SpatialDim", "NumericValue"]]
-    ##Überschreiben der NaN werte durch 0, Länge des Dataframes bestimmen und dann die Tabelle durchgehen
-    ##for i in range(sub1_df[sub1_df.Dim1].shape):
-      ##  if i == "NaN":
-        ##    sub1_df['Dim1'] = sub1_df['Dim1'].replace(['NaN'], '0')
-         ##   break
+    fig1 = hm.get_heatmap_alcoholconsumtion_rank_male(df)
 
-    fig1 = px.scatter_geo(sub1_df, locations=sub1_df.index,
-                          color="NumericValue", hover_name=sub1_df.index,
-                          color_continuous_scale=px.colors.sequential.speed)
 
-    print("Hier die sub1df")
-    print(sub1_df)
     ##print(df)
 
     #### Dash Server
@@ -92,7 +77,7 @@ if __name__ == '__main__':
             ),
         ]),
 
-        ##Neues HTML-Div für zweien Graphen
+        ##Neues HTML-Div für zweiten Graphen
 
         html.Div([
             dcc.Graph(id='Bubble Map Men',
