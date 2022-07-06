@@ -3,56 +3,47 @@
 # Press Umschalt+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 import pandas
-import requests
 import json
 import plotly.express as px
 from dash import Dash, html, dcc
 import heatmaps as hm
-
-
-def get_indicator_code(search):
-    r = requests.get("https://ghoapi.azureedge.net/api/Indicator")
-    r = r.json()["value"]
-    # print(r["value"])
-    for i in r:
-        if search in i['IndicatorName'] \
-                and not "ARCHIVED" in i['IndicatorCode']:
-            return i
-
-
-def get_indicator_code_request(search):
-    r = requests.get(("https://ghoapi.azureedge.net/api/Indicator?$filter=contains(IndicatorName,'" + search + "')"))
-    return r
-
-
-def get_dataframe_of_indicatorcode(IndicatorCode):
-    r = requests.get("https://ghoapi.azureedge.net/api/" + IndicatorCode)
-    r = r.json()["value"]
-    r = json.dumps(r)
-    df = pandas.read_json(r)
-    # df.set_index('SpatialDim', inplace=True)
-    # df = pd.DataFrame(r, index="SpatialDim")
-    return df
-
+import request_handler as r
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    IndicatorCode = get_indicator_code(
+    ## Dataframe Alcohol Consumption per country
+    ## Indicator-Code lautet SA_0000001404 (https://ghoapi.azureedge.net/api/SA_0000001404)
+    IndicatorCode = r.get_indicator_code(
         "Alcohol, drinkers only per capita (15+)consumption in litres of pure alcohol")['IndicatorCode']
-    df = get_dataframe_of_indicatorcode(IndicatorCode)
-    pandas.set_option('display.max_rows', df.shape[0] + 1, 'display.max_columns', df.shape[0] + 1)
+    df_alcohol_consumption_per_country = r.get_dataframe_of_indicatorcode(IndicatorCode)
+    pandas.set_option('display.max_rows', df_alcohol_consumption_per_country.shape[0] + 1, 'display.max_columns',
+                      df_alcohol_consumption_per_country.shape[0] + 1)
 
-    print(IndicatorCode)
-    fig = hm.get_heatmap_alcoholconsumption_btsx(df)
+    ## Dataframe Age-standardized suicide rates (per 100 000 population)
+    IndicatorCode = r.get_indicator_code("Age-standardized suicide rates (per 100 000 population)")['IndicatorCode']
+    df_suicide_rates = r.get_dataframe_of_indicatorcode(IndicatorCode)
+    # zeige nur einträge aus dem jahr 2016
+    #print(df_suicide_rates.query("TimeDim == 2016"))
 
-    # fig.show()
+    ## Dataframe HALE Life expectancy at birth
+    ## Indicator-Code lautet WHOSIS_000002 (https://ghoapi.azureedge.net/api/WHOSIS_000002)
+    IndicatorCode = r.get_indicator_code("Healthy life expectancy (HALE) at birth (years)")['IndicatorCode']
+    df_hale = r.get_dataframe_of_indicatorcode(IndicatorCode)
+    # zeige nur einträge aus dem jahr 2019
+    #print(df_hale.query("TimeDim == 2019"))
 
-    ### Alex Bereich
+    ## Dataframe Mean BMI age standardized estimate
+    IndicatorCode = r.get_indicator_code("Mean BMI (kg/m\u00b2) (age-standardized estimate)")['IndicatorCode']
+    df_bmi = r.get_dataframe_of_indicatorcode(IndicatorCode)
+    print(df_bmi.query("TimeDim == 2016"))
+
+    ## Heatmap für Alcohol Consumpion BTSX
+    fig = hm.get_heatmap_alcoholconsumption_btsx(df_alcohol_consumption_per_country)
+
+    ### Alex Bereich ###
 
     ##Bubble Map für Alkohol Consumption
-    ## Indicator-Code lautet SA_0000001404 (https://ghoapi.azureedge.net/api/SA_0000001404)
-    fig1 = hm.get_heatmap_alcoholconsumtion_rank_male(df)
-
+    fig1 = hm.get_heatmap_alcoholconsumtion_rank_male(df_alcohol_consumption_per_country)
 
     ##print(df)
 
