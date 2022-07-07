@@ -1,7 +1,7 @@
 import requests
 import pandas
 import json
-
+import urllib.request
 
 def get_indicator_code(search):
     r = requests.get("https://ghoapi.azureedge.net/api/Indicator")
@@ -19,7 +19,7 @@ def get_indicator_code_request(search):
     return r
 
 
-def get_dataframe_of_indicatorcode(IndicatorCode):
+def get_dataframe_by_indicatorcode(IndicatorCode):
     r = requests.get("https://ghoapi.azureedge.net/api/" + IndicatorCode)
     r = r.json()["value"]
     r = json.dumps(r)
@@ -27,3 +27,17 @@ def get_dataframe_of_indicatorcode(IndicatorCode):
     # df.set_index('SpatialDim', inplace=True)
     # df = pd.DataFrame(r, index="SpatialDim")
     return df
+
+def get_dataframe_by_worldlifeexpectancy_com(url):
+    headers = {'UserAgent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                            'Chrome/103.0.5060.53 Safari/537.36',
+               'referer': 'https://www.worldlifeexpectancy.com/cause-of-death/alzheimers-dementia/by-country/'}
+
+    #r = requests.get(url, headers=headers, stream=True)
+    r = urllib.request.urlopen(url)
+    print(r.content.decode())
+    #r = r.json()["chart"]["countries"]["countryitem"]
+
+    #r = json.dumps(r)
+    #df = pandas.read_json(r)
+    #return df
