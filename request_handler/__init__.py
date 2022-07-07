@@ -1,7 +1,8 @@
 import requests
 import pandas
 import json
-import urllib.request
+import country_converter as coco
+
 
 def get_indicator_code(search):
     r = requests.get("https://ghoapi.azureedge.net/api/Indicator")
@@ -28,6 +29,7 @@ def get_dataframe_by_indicatorcode(IndicatorCode):
     # df = pd.DataFrame(r, index="SpatialDim")
     return df
 
+
 def get_dataframe_by_worldlifeexpectancy_com(url):
     # < !DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN" >
     # < html > < head >
@@ -44,13 +46,22 @@ def get_dataframe_by_worldlifeexpectancy_com(url):
                'referer': 'https://www.worldlifeexpectancy.com/cause-of-death/alzheimers-dementia/by-country/'}
 
     r = requests.get(url, headers=headers, stream=True)
-    #r = urllib.request.urlopen(url)
+    # r = urllib.request.urlopen(url)
     print(r.content.decode())
-    #r = r.json()["chart"]["countries"]["countryitem"]
+    # r = r.json()["chart"]["countries"]["countryitem"]
 
-    #r = json.dumps(r)
-    #df = pandas.read_json(r)
-    #return df
+    # r = json.dumps(r)
+    # df = pandas.read_json(r)
+    # return df
+
 
 def get_dataframe_by_csv(path):
     return pandas.read_csv(path)
+
+
+def modify_country_codes(df):
+    # Central Africa not found in regex -> es ist Central African Republic gemeint:
+    df.loc[(df.Country == 'Central Africa'), 'Country'] = 'Central African Republic'
+    df["Country"] = [coco.convert(names=x, to='ISO3') for x in df["Country"]]
+    # print(df)
+    return df

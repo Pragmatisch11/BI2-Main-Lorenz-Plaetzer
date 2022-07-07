@@ -8,6 +8,8 @@ import plotly.express as px
 from dash import Dash, html, dcc
 import heatmaps as hm
 import request_handler as r
+#import pycountry
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -46,7 +48,14 @@ if __name__ == '__main__':
     # BTSX:
     df_alz_dem_lifeexpectancy_b = r.get_dataframe_by_csv("./Alzheimers_Dementia_BTSX.csv")
 
-    print(df_alz_dem_lifeexpectancy_f, df_alz_dem_lifeexpectancy_m, df_alz_dem_lifeexpectancy_b)
+    # Konvertieren der ausgeschriebenen Country-Namen zu ISO 3 mittels country-converter
+    df_alz_dem_lifeexpectancy_b = r.modify_country_codes(df_alz_dem_lifeexpectancy_b)
+    df_alz_dem_lifeexpectancy_f = r.modify_country_codes(df_alz_dem_lifeexpectancy_f)
+    df_alz_dem_lifeexpectancy_m = r.modify_country_codes(df_alz_dem_lifeexpectancy_m)
+
+
+
+    #print(df_alz_dem_lifeexpectancy_f, df_alz_dem_lifeexpectancy_m, df_alz_dem_lifeexpectancy_b)
     ## Heatmap für Alcohol Consumpion BTSX
     fig = hm.get_heatmap_alcoholconsumption_btsx(df_alcohol_consumption_per_country)
 
