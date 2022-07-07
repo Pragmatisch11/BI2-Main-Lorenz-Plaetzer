@@ -40,14 +40,11 @@ if __name__ == '__main__':
     ## Dataframe Death Rate per 100.000 Alzheimers & Dementia
     # https://www.worldlifeexpectancy.com/cause-of-death/alzheimers-dementia/by-country/female
     # Female:
-    df_alz_dem_lifeexpectancy_f = r.get_dataframe_by_worldlifeexpectancy_com(
-        "https://www.worldlifeexpectancy.com/j/country-cause?cause=950&order=hight&gender=F")
+    df_alz_dem_lifeexpectancy_f = r.get_dataframe_by_csv("./Alzheimers_Dementia_Female.csv")
     # Male:
-    df_alz_dem_lifeexpectancy_m = r.get_dataframe_by_worldlifeexpectancy_com(
-        "https://www.worldlifeexpectancy.com/j/country-cause?cause=950&order=hight&gender=M")
+    df_alz_dem_lifeexpectancy_m = r.get_dataframe_by_csv("./Alzheimers_Dementia_Male.csv")
     # BTSX:
-    df_alz_dem_lifeexpectancy_b = r.get_dataframe_by_worldlifeexpectancy_com(
-        "https://www.worldlifeexpectancy.com/j/country-cause?cause=950&order=hight&gender=B")
+    df_alz_dem_lifeexpectancy_b = r.get_dataframe_by_csv("./Alzheimers_Dementia_BTSX.csv")
 
     print(df_alz_dem_lifeexpectancy_f, df_alz_dem_lifeexpectancy_m, df_alz_dem_lifeexpectancy_b)
     ## Heatmap für Alcohol Consumpion BTSX
