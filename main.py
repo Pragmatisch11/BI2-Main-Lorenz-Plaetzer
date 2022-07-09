@@ -2,9 +2,6 @@
 
 # Press Umschalt+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-import base64
-from typing import io
-
 import pandas
 import json
 import plotly.express as px
@@ -13,6 +10,7 @@ import heatmaps as hm
 import request_handler as r
 import matplotlib.pyplot as plt
 import plotly.tools as tls
+import statsmodels
 
 # import pycountry
 
@@ -65,7 +63,7 @@ if __name__ == '__main__':
                      df_alz_dem_lifeexpectancy_b, on="Country")
     print(x)
 
-    fig3 = px.scatter(x,x='Rate',y='NumericValue')
+    fig3 = px.scatter(x,x='Rate',y='NumericValue', trendline="ols",size_max=1000)
 
     #data = base64.b64encode(buf.getbuffer()).decode("utf8")
 
@@ -79,6 +77,7 @@ if __name__ == '__main__':
     ##Bubble Map für Alkohol Consumption
     fig1 = hm.get_heatmap_alcoholconsumtion_rank_male(df_alcohol_consumption_per_country)
 
+    print(px.get_trendline_results(fig3))
     ##print(df)
 
     #### Dash Server
@@ -91,9 +90,7 @@ if __name__ == '__main__':
             html.H1(children='Hello Dash'),
 
 
-            html.Div(children='''
-            Dash: A web application framework for your data.
-        '''),
+            html.Div(children='''Dash: A web application framework for your data.'''),
 
             ##Graph 1
             dcc.Graph(
@@ -101,24 +98,27 @@ if __name__ == '__main__':
                 figure=fig
 
             ),
-        ]),
 
-        html.Div([
-            dcc.Graph(id='Korrelation',
-                      figure=fig3
-                      ),
+            ##Neues HTML-Div für zweiten Graphen
+
+            html.Div([
+                dcc.Graph(id='Bubble Map Men',
+                          figure=fig1
+                          ),
+            ]),
+
+            html.Div([
+                dcc.Graph(id='Korrelation',
+                          figure=fig3
+                          ),
+
+            ]),
+        ], style={'margin': 'auto'}),
 
 
-        ]),
 
 
-        ##Neues HTML-Div für zweiten Graphen
 
-        html.Div([
-            dcc.Graph(id='Bubble Map Men',
-                      figure=fig1
-                      ),
-        ])
 
     ])
     app.run_server(debug=True, use_reloader=False)
