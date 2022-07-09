@@ -12,7 +12,7 @@ def get_heatmap_alcoholconsumption_btsx(df):
 
     sub_df = sub_df.groupby(["SpatialDim"]).sum()
     # sub_df = sub_df.reset_index()
-    print(sub_df)
+    #print(sub_df)
 
     fig = px.choropleth(sub_df, locations=sub_df.index,
                         color="NumericValue",
@@ -46,7 +46,7 @@ def get_heatmap_alcoholconsumtion_rank_male(df):
                           color="NumericValue", hover_name=sub1_df.SpatialDim,
                           color_continuous_scale=px.colors.sequential.speed, size=sub1_df["NumericValue"])
 
-    print("Hier die sub1df")
-    print(sub1_df)
+    #print("Hier die sub1df")
+    #print(sub1_df)
 
     return fig
