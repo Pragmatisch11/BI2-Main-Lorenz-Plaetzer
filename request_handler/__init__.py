@@ -57,11 +57,3 @@ def get_dataframe_by_worldlifeexpectancy_com(url):
 
 def get_dataframe_by_csv(path):
     return pandas.read_csv(path)
-
-
-def modify_country_codes(df):
-    # Central Africa not found in regex -> es ist Central African Republic gemeint:
-    df.loc[(df.Country == 'Central Africa'), 'Country'] = 'Central African Republic'
-    df["Country"] = [coco.convert(names=x, to='ISO3') for x in df["Country"]]
-    # print(df)
-    return df
