@@ -43,7 +43,7 @@ def get_heatmap_alcoholconsumtion_rank_male(df):
     ##   break
 
     fig = px.scatter_geo(sub1_df, locations=sub1_df.SpatialDim,
-                          color="NumericValue", hover_name=sub1_df.SpatialDim,
+                          color="NumericValue", hover_name=sub1_df.SpatialDim, title= "Test",
                           color_continuous_scale=px.colors.sequential.speed, size=sub1_df["NumericValue"])
 
     #print("Hier die sub1df")
