@@ -71,3 +71,20 @@ def get_scatter_alcohol_demalz_bmi_scatter(df_alcohol_consumption, df_alz_dem_de
                       color='Continent', size='BMI')
 
     return fig
+
+def get_scatter_alcohol_population_scatter(df_alcohol_consumption, df_pop):
+    sub_df_alcohol_consumption = df_alcohol_consumption.rename(columns={"SpatialDim": "Country"})
+    df_pop = df_pop[["Country Code, 2016"]].rename(columns={"Country Code": "Country"})
+
+    scatter = pandas.merge(sub_df_alcohol_consumption.query('Dim1 == "BTSX"')[["Country", "NumericValue"]],
+                           df_pop, on="Country")
+
+    scatter = scatter.rename(columns={"NumericValue": "Alcoholconsumption",
+                                      "2016": "Country Population of 2016"})
+
+    ##Continent einfügen
+    fig = px.scatter(scatter, x='Alcoholconsumption', y='Country Population of 2016', color='Continent',
+                     size='Country Population of 2016')
+
+
+    return fig
