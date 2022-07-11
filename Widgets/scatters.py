@@ -4,6 +4,7 @@ import dataframe_handler as dfh
 
 
 def get_scatter_alcohol_demalz_hale_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_hale):
+
     sub_df_alcohol_consumption = df_alcohol_consumption.rename(columns={"SpatialDim": "Country"})
     df_hale = df_hale.rename(columns={"SpatialDim": "Country"})
 

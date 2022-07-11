@@ -5,9 +5,9 @@
 import pandas
 import json
 import plotly.express as px
-from dash import Dash, html, dcc
+from dash import Dash, html, dcc, Input, Output
 import Widgets as w
-from Widgets import heatmaps, scatters
+from Widgets import heatmaps, scatters, bars
 import request_handler as r
 import matplotlib.pyplot as plt
 import plotly.tools as tls
@@ -22,10 +22,12 @@ def get_alcohol_consumption_df():
         "Alcohol, drinkers only per capita (15+)consumption in litres of pure alcohol")['IndicatorCode']
     return r.get_dataframe_by_indicatorcode(IndicatorCode)
 
+
 def get_suicide_rates_df():
     ## Dataframe Age-standardized suicide rates (per 100 000 population)
     IndicatorCode = r.get_indicator_code("Age-standardized suicide rates (per 100 000 population)")['IndicatorCode']
     return r.get_dataframe_by_indicatorcode(IndicatorCode)
+
 
 def get_hale_df():
     # ## Dataframe HALE Life expectancy at birth
@@ -33,32 +35,40 @@ def get_hale_df():
     IndicatorCode = r.get_indicator_code("Healthy life expectancy (HALE) at birth (years)")['IndicatorCode']
     return r.get_dataframe_by_indicatorcode(IndicatorCode)
 
+
 def get_bmi_df():
     # ## Dataframe Mean BMI age standardized estimate
     IndicatorCode = r.get_indicator_code("Mean BMI (kg/m\u00b2) (age-standardized estimate)")['IndicatorCode']
     # print(df_bmi.query("TimeDim == 2016"))
     return r.get_dataframe_by_indicatorcode(IndicatorCode)
 
+
 def get_alz_dem_deathrate_f_df():
     ## Dataframe Death Rate per 100.000 Alzheimers & Dementia
     # https://www.worldlifeexpectancy.com/cause-of-death/alzheimers-dementia/by-country/female
     return r.get_dataframe_by_csv("./Alzheimers_Dementia_Female.csv")
+
 
 def get_alz_dem_deathrate_m_df():
     ## Dataframe Death Rate per 100.000 Alzheimers & Dementia
     # https://www.worldlifeexpectancy.com/cause-of-death/alzheimers-dementia/by-country/male
     return r.get_dataframe_by_csv("./Alzheimers_Dementia_Male.csv")
 
+
 def get_alz_dem_deathrate_b_df():
     ## Dataframe Death Rate per 100.000 Alzheimers & Dementia
     # https://www.worldlifeexpectancy.com/cause-of-death/alzheimers-dementia/by-country/female
     return r.get_dataframe_by_csv("./Alzheimers_Dementia_BTSX.csv")
 
+
+def get_country_population_df():
+    # https://data.worldbank.org/indicator/SP.POP.TOTL
+    return r.get_dataframe_by_csv("./Country_Population.csv")
+
+
 if __name__ == '__main__':
     df_alcohol_consumption = get_alcohol_consumption_df()
-
-    pandas.set_option('display.max_rows', df_alcohol_consumption.shape[0] + 1, 'display.max_columns',
-                      df_alcohol_consumption.shape[0] + 1)
+    # pandas.set_option('display.max_rows', df_alcohol_consumption.shape[0] + 1, 'display.max_columns', df_alcohol_consumption.shape[0] + 1)
 
     df_alz_dem_deathrate_b = get_alz_dem_deathrate_b_df()
     # Konvertieren der ausgeschriebenen Country-Namen zu ISO 3 mittels country-converter
@@ -67,6 +77,8 @@ if __name__ == '__main__':
     df_hale = get_hale_df()
 
     df_bmi = get_bmi_df()
+
+    df_pop = get_country_population_df()
 
     ## Heatmap für Alcohol Consumpion BTSX
     fig = w.heatmaps.get_heatmap_alcoholconsumption_btsx(df_alcohol_consumption)
@@ -78,8 +90,9 @@ if __name__ == '__main__':
 
     fig2 = w.scatters.get_scatter_alcohol_demalz_hale_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b,
                                                               df_hale)
-    fig3 = w.scatters.get_scatter_alcohol_demalz_bmi_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b,
-                                                             df_bmi)
+    fig3 = w.scatters.get_scatter_alcohol_demalz_bmi_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_bmi)
+
+    fig4 = w.bars.get_alcohol_consumption_barchart_per_continent(df_alcohol_consumption, "BTSX")
 
     #### Dash Server
     app = Dash(__name__)
@@ -89,7 +102,6 @@ if __name__ == '__main__':
         html.Div([
 
             html.H1(children='Hello Dash'),
-
 
             html.Div(children='''Dash: A web application framework for your data.'''),
 
@@ -120,14 +132,30 @@ if __name__ == '__main__':
                           ),
 
             ]),
+            html.Div([
+                dcc.Dropdown(
+                    id="dropdown1",
+                    options=["BTSX", "FMLE", "MLE"],
+                    value="BTSX",
+                    clearable=False,
+                ),
+                dcc.Graph(id='Bar1', figure=fig4),
+
+            ]),
         ], style={'margin': 'auto'}),
 
-
-
-
-
-
     ])
+
+
+    @app.callback(
+        Output("Bar1", "figure"),
+        Input("dropdown1", "value")
+    )
+    def update_alcohol_consumption_barchart_per_continent(sex):
+        fig = w.bars.get_alcohol_consumption_barchart_per_continent(df_alcohol_consumption, sex)
+        return fig
+
+
     app.run_server(debug=True, use_reloader=False)
     # app.layout = dash_table.DataTable(x.to_dict('records'), [{"name": i, "id": i} for i in x.columns])
 
