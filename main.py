@@ -66,96 +66,101 @@ def get_country_population_df():
     return r.get_dataframe_by_csv("./Country_Population.csv")
 
 
-if __name__ == '__main__':
-    df_alcohol_consumption = get_alcohol_consumption_df()
-    # pandas.set_option('display.max_rows', df_alcohol_consumption.shape[0] + 1, 'display.max_columns', df_alcohol_consumption.shape[0] + 1)
+df_alcohol_consumption = get_alcohol_consumption_df()
+df_alcohol_consumption = df_alcohol_consumption.rename(columns={"SpatialDim": "Country"})
+df_alcohol_consumption = dfh.add_continent_by_iso3_code(df_alcohol_consumption)
 
-    df_alz_dem_deathrate_b = get_alz_dem_deathrate_b_df()
-    # Konvertieren der ausgeschriebenen Country-Namen zu ISO 3 mittels country-converter
-    df_alz_dem_deathrate_b = dfh.modify_country_codes(df_alz_dem_deathrate_b)
 
-    df_hale = get_hale_df()
+# pandas.set_option('display.max_rows', df_alcohol_consumption.shape[0] + 1, 'display.max_columns', df_alcohol_consumption.shape[0] + 1)
 
-    df_bmi = get_bmi_df()
+df_alz_dem_deathrate_b = get_alz_dem_deathrate_b_df()
+# Konvertieren der ausgeschriebenen Country-Namen zu ISO 3 mittels country-converter
+df_alz_dem_deathrate_b = dfh.modify_country_codes(df_alz_dem_deathrate_b)
 
-    df_pop = get_country_population_df()
+df_hale = get_hale_df()
+df_hale = df_hale.rename(columns={"SpatialDim": "Country"})
 
-    ## Heatmap für Alcohol Consumpion BTSX
-    fig = w.heatmaps.get_heatmap_alcoholconsumption_btsx(df_alcohol_consumption)
+df_bmi = get_bmi_df()
 
-    ### Alex Bereich ###
 
-    ##Bubble Map für Alkohol Consumption
-    fig1 = w.heatmaps.get_heatmap_alcoholconsumtion_rank_male(df_alcohol_consumption)
+df_pop = get_country_population_df()
 
-    fig2 = w.scatters.get_scatter_alcohol_demalz_hale_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b,
-                                                              df_hale)
-    fig3 = w.scatters.get_scatter_alcohol_demalz_bmi_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_bmi)
+## Heatmap für Alcohol Consumpion BTSX
+fig = w.heatmaps.get_heatmap_alcoholconsumption_btsx(df_alcohol_consumption)
 
-    fig4 = w.bars.get_alcohol_consumption_barchart_per_continent(df_alcohol_consumption, "BTSX")
+### Alex Bereich ###
 
-    #### Dash Server
-    app = Dash(__name__)
+##Bubble Map für Alkohol Consumption
+fig1 = w.heatmaps.get_heatmap_alcoholconsumtion_rank_male(df_alcohol_consumption)
 
-    app.layout = html.Div(children=[
+fig2 = w.scatters.get_scatter_alcohol_demalz_hale_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_hale)
+
+fig3 = w.scatters.get_scatter_alcohol_demalz_bmi_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_bmi)
+
+#fig4 = w.bars.get_alcohol_consumption_barchart_per_continent(df_alcohol_consumption, "BTSX")
+
+#### Dash Server
+app = Dash(__name__)
+
+app.layout = html.Div(children=[
+
+    html.Div([
+
+        html.H1(children='Hello Dash'),
+
+        html.Div(children='''Dash: A web application framework for your data.'''),
+
+        ##Graph 1
+        dcc.Graph(
+            id='example-graph',
+            figure=fig
+
+        ),
+
+        ##Neues HTML-Div für zweiten Graphen
 
         html.Div([
+            dcc.Graph(id='Bubble Map Men',
+                      figure=fig1
+                      ),
+        ]),
 
-            html.H1(children='Hello Dash'),
+        html.Div([
+            dcc.Graph(id='Korrelation',
+                      figure=fig2
+                      ),
 
-            html.Div(children='''Dash: A web application framework for your data.'''),
+        ]),
+        html.Div([
+            dcc.Graph(id='Korrelation2',
+                      figure=fig3
+                      ),
 
-            ##Graph 1
-            dcc.Graph(
-                id='example-graph',
-                figure=fig
-
+        ]),
+        html.Div([
+            dcc.Dropdown(
+                id="dropdown1",
+                options=["BTSX", "FMLE", "MLE"],
+                value="BTSX",
+                clearable=False,
             ),
+            dcc.Graph(id='Bar1'),
 
-            ##Neues HTML-Div für zweiten Graphen
+        ]),
+    ], style={'margin': 'auto'}),
 
-            html.Div([
-                dcc.Graph(id='Bubble Map Men',
-                          figure=fig1
-                          ),
-            ]),
-
-            html.Div([
-                dcc.Graph(id='Korrelation',
-                          figure=fig2
-                          ),
-
-            ]),
-            html.Div([
-                dcc.Graph(id='Korrelation2',
-                          figure=fig3
-                          ),
-
-            ]),
-            html.Div([
-                dcc.Dropdown(
-                    id="dropdown1",
-                    options=["BTSX", "FMLE", "MLE"],
-                    value="BTSX",
-                    clearable=False,
-                ),
-                dcc.Graph(id='Bar1', figure=fig4),
-
-            ]),
-        ], style={'margin': 'auto'}),
-
-    ])
+])
 
 
-    @app.callback(
-        Output("Bar1", "figure"),
-        Input("dropdown1", "value")
-    )
-    def update_alcohol_consumption_barchart_per_continent(sex):
-        fig = w.bars.get_alcohol_consumption_barchart_per_continent(df_alcohol_consumption, sex)
-        return fig
+@app.callback(
+    Output("Bar1", "figure"),
+    Input("dropdown1", "value"))
+def update_alcohol_consumption_barchart_per_continent(sex):
+    fig5 = w.bars.get_alcohol_consumption_barchart_per_continent(df_alcohol_consumption, sex)
+    return fig5
 
 
+if __name__ == '__main__':
     app.run_server(debug=True, use_reloader=False)
     # app.layout = dash_table.DataTable(x.to_dict('records'), [{"name": i, "id": i} for i in x.columns])
 
