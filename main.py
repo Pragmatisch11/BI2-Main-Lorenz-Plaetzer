@@ -99,6 +99,8 @@ fig3 = w.scatters.get_scatter_alcohol_demalz_bmi_scatter(df_alcohol_consumption,
 
 #fig4 = w.bars.get_alcohol_consumption_barchart_per_continent(df_alcohol_consumption, "BTSX")
 
+fig5 = w.scatters.get_scatter_alcohol_population_scatter(df_alcohol_consumption,df_pop)
+
 #### Dash Server
 app = Dash(__name__)
 
@@ -134,6 +136,13 @@ app.layout = html.Div(children=[
         html.Div([
             dcc.Graph(id='Korrelation2',
                       figure=fig3
+                      ),
+
+        ]),
+
+        html.Div([
+            dcc.Graph(id='Korrelation3',
+                      figure=fig5
                       ),
 
         ]),
