@@ -4,8 +4,7 @@ import dataframe_handler as dfh
 
 
 def get_scatter_alcohol_demalz_hale_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_hale):
-
-    #sub_df_alcohol_consumption = df_alcohol_consumption.rename(columns={"SpatialDim": "Country"})
+    # sub_df_alcohol_consumption = df_alcohol_consumption.rename(columns={"SpatialDim": "Country"})
     df_hale = df_hale.rename(columns={"SpatialDim": "Country"})
 
     scatter = pandas.merge(df_alcohol_consumption.query('Dim1 == "BTSX"')[["Country", "NumericValue", "Continent"]],
@@ -19,7 +18,7 @@ def get_scatter_alcohol_demalz_hale_scatter(df_alcohol_consumption, df_alz_dem_d
     # y='Dementia and Alzheimers Death Rate per 100000', trendline="ols",size_max=1000)
 
     # Auf Basis von ISO3-Codes hinzufügen der Continent Namen
-    #scatter = dfh.add_continent_by_iso3_code(scatter)
+    # scatter = dfh.add_continent_by_iso3_code(scatter)
 
     # Merge von Lebenserwartung
     # scatter = scatter.assign(HALE=None)
@@ -36,13 +35,14 @@ def get_scatter_alcohol_demalz_hale_scatter(df_alcohol_consumption, df_alz_dem_d
 
     scatter = scatter.rename(columns={"Value": "HALE"})
 
-    #print(scatter)
+    # print(scatter)
     fig = px.scatter(scatter, x='Alcoholconsumption', y='Dementia and Alzheimers Death Rate per 100000',
                      color='Continent', size='HALE')
     return fig
 
+
 def get_scatter_alcohol_demalz_bmi_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_bmi):
-    #sub_df_alcohol_consumption = df_alcohol_consumption.rename(columns={"SpatialDim": "Country"})
+    # sub_df_alcohol_consumption = df_alcohol_consumption.rename(columns={"SpatialDim": "Country"})
     df_bmi = df_bmi[["SpatialDim", "TimeDim", "Dim1", "NumericValue"]].rename(columns={"SpatialDim": "Country",
                                                                                        "NumericValue": "BMI"})
 
@@ -57,7 +57,7 @@ def get_scatter_alcohol_demalz_bmi_scatter(df_alcohol_consumption, df_alz_dem_de
     # y='Dementia and Alzheimers Death Rate per 100000', trendline="ols",size_max=1000)
 
     # Auf Basis von ISO3-Codes hinzufügen der Continent Namen
-    #scatter = dfh.add_continent_by_iso3_code(scatter)
+    # scatter = dfh.add_continent_by_iso3_code(scatter)
 
     print("----------############-------------")
 
@@ -68,16 +68,18 @@ def get_scatter_alcohol_demalz_bmi_scatter(df_alcohol_consumption, df_alz_dem_de
     scatter = scatter.dropna()
     print(scatter)
     fig = px.scatter(scatter, x='Alcoholconsumption', y='Dementia and Alzheimers Death Rate per 100000',
-                      color='Continent', size='BMI')
+                     color='Continent', size='BMI')
 
     return fig
 
-def get_scatter_alcohol_population_scatter(df_alcohol_consumption, df_pop):
-    sub_df_alcohol_consumption = df_alcohol_consumption.rename(columns={"SpatialDim": "Country"})
-    df_pop = df_pop[["Country Code, 2016"]].rename(columns={"Country Code": "Country"})
 
-    scatter = pandas.merge(sub_df_alcohol_consumption.query('Dim1 == "BTSX"')[["Country", "NumericValue"]],
-                           df_pop, on="Country")
+def get_scatter_alcohol_population_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_pop):
+
+    # sub_df_alcohol_consumption = df_alcohol_consumption.rename(columns={"SpatialDim": "Country"})
+    df_pop = df_pop[["Country Code", "2016"]].rename(columns={"Country Code": "Country"})
+
+    scatter = pandas.merge(df_alcohol_consumption.query('Dim1 == "BTSX"')[["Country", "NumericValue", "Continent"]],
+                           df_alz_dem_deathrate_b, on="Country")
 
     scatter = scatter.rename(columns={"NumericValue": "Alcoholconsumption",
                                       "2016": "Country Population of 2016"})
@@ -86,6 +88,5 @@ def get_scatter_alcohol_population_scatter(df_alcohol_consumption, df_pop):
     ##Continent einfügen
     fig = px.scatter(scatter, x='Alcoholconsumption', y='Country Population of 2016', color='Continent',
                      size='Country Population of 2016')
-
 
     return fig
