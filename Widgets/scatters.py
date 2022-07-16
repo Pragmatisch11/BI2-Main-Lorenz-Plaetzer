@@ -97,6 +97,7 @@ def get_scatter_alcohol_population_scatter(df_alcohol_consumption, df_alz_dem_de
     #Test mit MinMaxScaler zur besseren Darstellung der Bubblegrößen
     scaler = pre.MinMaxScaler()
     scatter['Country Population of 2016'] = scaler.fit_transform(scatter[['Country Population of 2016']].to_numpy())
+    scatter['Country Population of 2016'] = round(scatter['Country Population of 2016'],3)
 
 
 
