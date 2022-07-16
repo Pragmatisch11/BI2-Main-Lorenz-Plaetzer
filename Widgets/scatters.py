@@ -84,7 +84,9 @@ def get_scatter_alcohol_population_scatter(df_alcohol_consumption, df_alz_dem_de
     scatter = scatter.rename(columns={"NumericValue": "Alcoholconsumption",
                                       "2016": "Country Population of 2016"})
 
-    scatter = dfh.add_continent_by_iso3_code(scatter)
+    #scatter = dfh.add_continent_by_iso3_code(scatter)
+
+    scatter = pandas.merge(scatter, df_pop, on=["Country"])
     ##Continent einfügen
     fig = px.scatter(scatter, x='Alcoholconsumption', y='Country Population of 2016', color='Continent',
                      size='Country Population of 2016')
