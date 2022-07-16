@@ -76,13 +76,15 @@ def get_scatter_alcohol_demalz_bmi_scatter(df_alcohol_consumption, df_alz_dem_de
 def get_scatter_alcohol_population_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_pop):
 
     # sub_df_alcohol_consumption = df_alcohol_consumption.rename(columns={"SpatialDim": "Country"})
-    df_pop = df_pop[["Country Code", "2016"]].rename(columns={"Country Code": "Country"})
+    df_pop = df_pop[["Country Code", "2016"]].rename(columns={"Country Code": "Country",
+                                                              "2016": "Country Population of 2016"})
 
     scatter = pandas.merge(df_alcohol_consumption.query('Dim1 == "BTSX"')[["Country", "NumericValue", "Continent"]],
                            df_alz_dem_deathrate_b, on="Country")
 
-    scatter = scatter.rename(columns={"NumericValue": "Alcoholconsumption",
-                                      "2016": "Country Population of 2016"})
+    scatter = scatter.rename(columns={"NumericValue": "Alcoholconsumption"})
+
+
 
     #scatter = dfh.add_continent_by_iso3_code(scatter)
 
