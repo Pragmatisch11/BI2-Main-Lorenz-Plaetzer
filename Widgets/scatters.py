@@ -1,5 +1,7 @@
+import matplotlib.pyplot as plt
 import pandas
 import plotly.express as px
+from sklearn import preprocessing as pre
 import dataframe_handler as dfh
 
 
@@ -76,21 +78,33 @@ def get_scatter_alcohol_demalz_bmi_scatter(df_alcohol_consumption, df_alz_dem_de
 def get_scatter_alcohol_population_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_pop):
 
     # sub_df_alcohol_consumption = df_alcohol_consumption.rename(columns={"SpatialDim": "Country"})
+
+    # Country Population noch umbennen mit dem Divisionsfaktor (zB divided by 10000)
     df_pop = df_pop[["Country Code", "2016"]].rename(columns={"Country Code": "Country",
                                                               "2016": "Country Population of 2016"})
 
     scatter = pandas.merge(df_alcohol_consumption.query('Dim1 == "BTSX"')[["Country", "NumericValue", "Continent"]],
                            df_alz_dem_deathrate_b, on="Country")
 
-    scatter = scatter.rename(columns={"NumericValue": "Alcoholconsumption"})
+    scatter = scatter.rename(columns={"NumericValue": "Alcoholconsumption",
+                                      "Rate": "Dementia and Alzheimers Death Rate per 100000"})
 
-
-
-    #scatter = dfh.add_continent_by_iso3_code(scatter)
 
     scatter = pandas.merge(scatter, df_pop, on=["Country"])
+    scatter['Country Population of 2016'] = scatter["Country Population of 2016"].fillna(0)
+    #scatter['Country Population of 2016'] = scatter['Country Population of 2016'] / 10000
+
+    #Test mit MinMaxScaler zur besseren Darstellung der Bubblegrößen
+    scaler = pre.MinMaxScaler()
+    scatter['Country Population of 2016'] = scaler.fit_transform(scatter[['Country Population of 2016']].to_numpy())
+
+
+
+
     ##Continent einfügen
-    fig = px.scatter(scatter, x='Alcoholconsumption', y='Country Population of 2016', color='Continent',
-                     size='Country Population of 2016')
+
+    #x='Alcoholconsumption', y='Dementia and Alzheimers Death Rate per 100000'
+    fig = px.scatter(scatter, x='Alcoholconsumption', y='Dementia and Alzheimers Death Rate per 100000', color='Continent',
+                     size='Country Population of 2016', hover_data=["Country"])
 
     return fig
