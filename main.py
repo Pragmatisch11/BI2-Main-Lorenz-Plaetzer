@@ -101,6 +101,9 @@ fig3 = w.scatters.get_scatter_alcohol_demalz_bmi_scatter(df_alcohol_consumption,
 
 fig6 = w.scatters.get_scatter_alcohol_population_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_pop)
 
+fig7 = w.scatters.get_scatter_alcohol_bmi_population_scatter(df_alcohol_consumption, df_bmi, df_pop)
+
+
 #### Dash Server
 app = Dash(__name__)
 
@@ -141,9 +144,17 @@ app.layout = html.Div(children=[
         ]),
 
         html.Div([
-            html.H4('Scatter Plot mit Country Population of 2016'),
+            html.H4('Scatter Plot mit Country Population of 2016, y-Achse dementia rate'),
             dcc.Graph(id='Korrelation3',
                       figure=fig6
+                      ),
+
+        ]),
+
+        html.Div([
+            html.H4('Scatter Plot mit Country Population of 2016, y-Achse BMI'),
+            dcc.Graph(id='Korrelation4',
+                      figure=fig7
                       ),
 
         ]),

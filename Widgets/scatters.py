@@ -94,9 +94,9 @@ def get_scatter_alcohol_population_scatter(df_alcohol_consumption, df_alz_dem_de
 
     scatter = pandas.merge(scatter, df_pop, on=["Country"])
     scatter['Country Population of 2016'] = scatter["Country Population of 2016"].fillna(0)
-    #scatter['Country Population of 2016'] = scatter['Country Population of 2016'] / 10000
 
-    #Test mit MinMaxScaler zur besseren Darstellung der Bubblegrößen
+    ##Tests mit MinMaxScaler und einfacher Division
+    #scatter['Country Population of 2016'] = scatter['Country Population of 2016'] / 10000
     #scaler = pre.MinMaxScaler()
     #scatter['Country Population of 2016'] = scaler.fit_transform(scatter[['Country Population of 2016']].to_numpy())
     #scatter['Country Population of 2016'] = round(scatter['Country Population of 2016'],3)
@@ -105,11 +105,36 @@ def get_scatter_alcohol_population_scatter(df_alcohol_consumption, df_alz_dem_de
                                                     out=np.zeros_like(scatter['Country Population of 2016']),
                                                     where=(scatter['Country Population of 2016']!=0))
 
-
-    ##Continent einfügen
-
-    #x='Alcoholconsumption', y='Dementia and Alzheimers Death Rate per 100000'
     fig = px.scatter(scatter, x='Alcoholconsumption', y='Dementia and Alzheimers Death Rate per 100000', color='Continent',
+                     size='Country Population of 2016', hover_data=["Country Name"])
+
+    return fig
+
+
+def get_scatter_alcohol_bmi_population_scatter(df_alcohol_consumption, df_bmi, df_pop):
+
+    df_pop = df_pop[["Country Name", "Country Code", "2016"]].rename(columns={"Country Code": "Country",
+                                                                              "2016": "Country Population of 2016"})
+
+    df_bmi = df_bmi[["SpatialDim", "TimeDim", "Dim1", "NumericValue"]].rename(columns={"SpatialDim": "Country",
+                                                                                       "NumericValue": "BMI"})
+
+    scatter = pandas.merge(df_alcohol_consumption.query('Dim1 == "BTSX"')[["Country", "NumericValue", "Continent"]],
+                           df_pop, on="Country")
+    scatter['Country Population of 2016'] = scatter["Country Population of 2016"].fillna(0)
+    scatter['Country Population of 2016'] = np.log2(scatter['Country Population of 2016'],
+                                                    out=np.zeros_like(scatter['Country Population of 2016']),
+                                                    where=(scatter['Country Population of 2016'] != 0))
+
+    scatter = scatter.rename(columns={"NumericValue": "Alcoholconsumption"})
+
+    df_bmi = df_bmi.query('Dim1 == "%s"' % "BTSX")
+    df_bmi = df_bmi.groupby(["Country"]).mean()
+
+    scatter = pandas.merge(scatter, df_bmi, on=["Country"])
+    scatter = scatter.dropna()
+
+    fig = px.scatter(scatter, x='Alcoholconsumption', y='BMI', color='Continent',
                      size='Country Population of 2016', hover_data=["Country Name"])
 
     return fig
