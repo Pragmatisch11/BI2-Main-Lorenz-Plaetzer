@@ -141,6 +141,7 @@ app.layout = html.Div(children=[
         ]),
 
         html.Div([
+            html.H4('Scatter Plot mit Country Population of 2016'),
             dcc.Graph(id='Korrelation3',
                       figure=fig6
                       ),

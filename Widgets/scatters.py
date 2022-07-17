@@ -3,6 +3,8 @@ import pandas
 import plotly.express as px
 from sklearn import preprocessing as pre
 import dataframe_handler as dfh
+import numpy as np
+from numpy import ma
 
 
 def get_scatter_alcohol_demalz_hale_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_hale):
@@ -80,7 +82,7 @@ def get_scatter_alcohol_population_scatter(df_alcohol_consumption, df_alz_dem_de
     # sub_df_alcohol_consumption = df_alcohol_consumption.rename(columns={"SpatialDim": "Country"})
 
     # Country Population noch umbennen mit dem Divisionsfaktor (zB divided by 10000)
-    df_pop = df_pop[["Country Code", "2016"]].rename(columns={"Country Code": "Country",
+    df_pop = df_pop[["Country Name","Country Code", "2016"]].rename(columns={"Country Code": "Country",
                                                               "2016": "Country Population of 2016"})
 
     scatter = pandas.merge(df_alcohol_consumption.query('Dim1 == "BTSX"')[["Country", "NumericValue", "Continent"]],
@@ -95,17 +97,19 @@ def get_scatter_alcohol_population_scatter(df_alcohol_consumption, df_alz_dem_de
     #scatter['Country Population of 2016'] = scatter['Country Population of 2016'] / 10000
 
     #Test mit MinMaxScaler zur besseren Darstellung der Bubblegrößen
-    scaler = pre.MinMaxScaler()
-    scatter['Country Population of 2016'] = scaler.fit_transform(scatter[['Country Population of 2016']].to_numpy())
-    scatter['Country Population of 2016'] = round(scatter['Country Population of 2016'],3)
+    #scaler = pre.MinMaxScaler()
+    #scatter['Country Population of 2016'] = scaler.fit_transform(scatter[['Country Population of 2016']].to_numpy())
+    #scatter['Country Population of 2016'] = round(scatter['Country Population of 2016'],3)
 
-
+    scatter['Country Population of 2016'] = np.log2(scatter['Country Population of 2016'],
+                                                    out=np.zeros_like(scatter['Country Population of 2016']),
+                                                    where=(scatter['Country Population of 2016']!=0))
 
 
     ##Continent einfügen
 
     #x='Alcoholconsumption', y='Dementia and Alzheimers Death Rate per 100000'
     fig = px.scatter(scatter, x='Alcoholconsumption', y='Dementia and Alzheimers Death Rate per 100000', color='Continent',
-                     size='Country Population of 2016', hover_data=["Country"])
+                     size='Country Population of 2016', hover_data=["Country Name"])
 
     return fig
