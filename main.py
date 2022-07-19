@@ -9,7 +9,7 @@ from dash import Dash, html, dcc, Input, Output
 import Widgets as w
 from Widgets import heatmaps, scatters, bars
 import request_handler as r
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import plotly.tools as tls
 import statsmodels
 import dataframe_handler as dfh
@@ -105,15 +105,19 @@ fig7 = w.scatters.get_scatter_alcohol_bmi_population_scatter(df_alcohol_consumpt
 
 
 #### Dash Server
-app = Dash(__name__)
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+app = Dash(__name__, external_stylesheets=external_stylesheets)
 
-app.layout = html.Div(children=[
+url_bar_and_content_div = html.Div(children=[
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='page-content'),
+])
 
-    html.Div([
+index_page = html.Div([
 
-        html.H1(children='Hello Dash'),
-
-        html.Div(children='''Dash: A web application framework for your data.'''),
+        html.H1('Eine Analyse des weltweiten Alkoholkonsums'),
+        #html.Br(),
+        html.H2('Aufbereitung mittels Dash und Plotly'),
 
         ##Graph 1
         dcc.Graph(
@@ -168,10 +172,13 @@ app.layout = html.Div(children=[
             dcc.Graph(id='Bar1'),
 
         ]),
-    ], style={'margin': 'auto'}),
-
 ])
-
+#https://dash.plotly.com/urls#dynamically-create-a-layout-for-multi-page-app-validation
+app.layout = url_bar_and_content_div
+app.validation_layout = html.Div([
+    url_bar_and_content_div,
+    index_page,
+])
 
 @app.callback(
     Output("Bar1", "figure"),
@@ -180,6 +187,12 @@ def update_alcohol_consumption_barchart_per_continent(sex):
     fig5 = w.bars.get_alcohol_consumption_barchart_per_continent(df_alcohol_consumption, sex)
     return fig5
 
+# Update the index
+@app.callback(
+    Output('page-content', 'children'),
+    Input('url', 'pathname'))
+def display_page(pathname):
+    return index_page
 
 if __name__ == '__main__':
     app.run_server(debug=True, use_reloader=False)

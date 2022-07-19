@@ -1,10 +1,10 @@
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import pandas
 import plotly.express as px
-from sklearn import preprocessing as pre
-import dataframe_handler as dfh
+#from sklearn import preprocessing as pre
+#import dataframe_handler as dfh
 import numpy as np
-from numpy import ma
+#from numpy import ma
 
 
 def get_scatter_alcohol_demalz_hale_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_hale):
