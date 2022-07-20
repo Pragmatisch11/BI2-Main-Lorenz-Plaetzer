@@ -118,7 +118,7 @@ index_page = html.Div([
         html.H1('Eine Analyse des weltweiten Alkoholkonsums'),
         #html.Br(),
         html.H2('Aufbereitung mittels Dash und Plotly'),
-
+        dcc.Link('Zur Aufbereitung mittels Balkendiagrammen', href='/page-bar'),
         ##Graph 1
         dcc.Graph(
             id='example-graph',
@@ -162,27 +162,39 @@ index_page = html.Div([
                       ),
 
         ]),
-        html.Div([
-            dcc.Dropdown(
-                id="dropdown1",
-                options=["BTSX", "FMLE", "MLE"],
-                value="BTSX",
-                clearable=False,
-            ),
-            dcc.Graph(id='Bar1'),
 
-        ]),
 ])
+
+layout_bar_page = html.Div([
+    html.H3('Eine Aufbereitung mittels Balkendiagrammen'),
+    html.Div([
+        dcc.Dropdown(
+            id="DropdownSex_alcohol_consumption_per_continent",
+            options={
+                'BTSX': 'M und W',
+                'FMLE': 'W',
+                'MLE': 'M' },
+            value="BTSX",
+            clearable=False,
+        ),
+        dcc.Graph(id='Bar_alcohol_consumption_per_continent'),
+
+    ]),
+    dcc.Link('Zurück zur Startseite', href='/'),
+])
+
 #https://dash.plotly.com/urls#dynamically-create-a-layout-for-multi-page-app-validation
 app.layout = url_bar_and_content_div
 app.validation_layout = html.Div([
     url_bar_and_content_div,
     index_page,
+    layout_bar_page,
 ])
 
+# Bar Page Callbacks
 @app.callback(
-    Output("Bar1", "figure"),
-    Input("dropdown1", "value"))
+    Output("Bar_alcohol_consumption_per_continent", "figure"),
+    Input("DropdownSex_alcohol_consumption_per_continent", "value"))
 def update_alcohol_consumption_barchart_per_continent(sex):
     fig5 = w.bars.get_alcohol_consumption_barchart_per_continent(df_alcohol_consumption, sex)
     return fig5
@@ -192,7 +204,10 @@ def update_alcohol_consumption_barchart_per_continent(sex):
     Output('page-content', 'children'),
     Input('url', 'pathname'))
 def display_page(pathname):
-    return index_page
+    if pathname == '/page-bar':
+        return layout_bar_page
+    else:
+        return index_page
 
 if __name__ == '__main__':
     app.run_server(debug=True, use_reloader=False)
