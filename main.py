@@ -18,6 +18,7 @@ import dataframe_handler as dfh
 def get_alcohol_consumption_df():
     ## Dataframe Alcohol Consumption per country
     ## Indicator-Code lautet SA_0000001404 (https://ghoapi.azureedge.net/api/SA_0000001404)
+    ## https://www.who.int/data/gho/data/indicators/indicator-details/GHO/alcohol-recorded-per-capita-(15-)-consumption-(in-litres-of-pure-alcohol)
     IndicatorCode = r.get_indicator_code(
         "Alcohol, drinkers only per capita (15+)consumption in litres of pure alcohol")['IndicatorCode']
     return r.get_dataframe_by_indicatorcode(IndicatorCode)
@@ -86,12 +87,12 @@ df_bmi = get_bmi_df()
 df_pop = get_country_population_df()
 
 ## Heatmap für Alcohol Consumpion BTSX
-fig = w.heatmaps.get_heatmap_alcoholconsumption_btsx(df_alcohol_consumption)
+#fig = w.heatmaps.get_heatmap_alcoholconsumption(df_alcohol_consumption)
 
 ### Alex Bereich ###
 
 ##Bubble Map für Alkohol Consumption
-fig1 = w.heatmaps.get_heatmap_alcoholconsumtion_rank_male(df_alcohol_consumption)
+#fig1 = w.heatmaps.get_bubblemap_alcoholconsumtion(df_alcohol_consumption)
 
 fig2 = w.scatters.get_scatter_alcohol_demalz_hale_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_hale)
 
@@ -115,58 +116,139 @@ url_bar_and_content_div = html.Div(children=[
 
 index_page = html.Div([
 
-        html.H1('Eine Analyse des weltweiten Alkoholkonsums'),
-        #html.Br(),
-        html.H2('Aufbereitung mittels Dash und Plotly'),
-        dcc.Link('Zur Aufbereitung mittels Balkendiagrammen', href='/page-bar'),
-        ##Graph 1
-        dcc.Graph(
-            id='example-graph',
-            figure=fig
+    html.H1('Eine Analyse des weltweiten Alkoholkonsums'),
+    #html.Br(),
+    html.H2('Aufbereitung mittels Dash und Plotly'),
+    dcc.Link('Zur Aufbereitung mittels Bar Plots', href='/page-bar'),
+    html.Br(),
+    dcc.Link('Zur Aufbereitung mittels Scatter Plots', href='/page-scatter'),
 
+
+    ##Graph 1
+    html.Div([
+        html.H5('Alkoholkonsum in puren Litern weltweit nach Geschlecht; Darstellung mittels einer Heatmap'),
+        dcc.Dropdown(
+            [
+                {
+                    "label": html.Div(
+                        [
+                            html.Img(src="/assets/images/sex_icons/female.svg", height=20),
+                            html.Div("Weiblich", style={'font-size': 15, 'padding-left': 10}),
+                        ], style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+                    ),
+                    "value": "FMLE",
+                },
+                {
+                    "label": html.Div(
+                        [
+                            html.Img(src="assets/images/sex_icons/male.svg", height=20),
+                            html.Div("Männlich", style={'font-size': 15, 'padding-left': 10}),
+                        ], style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+                    ),
+                    "value": "MLE",
+                },
+                {
+                    "label": html.Div(
+                        [
+                            html.Img(src="assets/images/sex_icons/btsx.svg", height=20),
+                            html.Div("Beide Geschlechter", style={'font-size': 15, 'padding-left': 10}),
+                        ], style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+                    ),
+                    "value": "BTSX",
+                },
+            ],
+            id="DropdownSex_heatmap_alcoholconsumption",
+            value="BTSX",
+            clearable=False,
         ),
+        dcc.Graph(
+            id='heatmap_alcoholconsumption',
+        ),
+    ]),
 
-        ##Neues HTML-Div für zweiten Graphen
 
-        html.Div([
-            dcc.Graph(id='Bubble Map Men',
-                      figure=fig1
-                      ),
-        ]),
+    ##Neues HTML-Div für zweiten Graphen
 
-        html.Div([
-            dcc.Graph(id='Korrelation',
-                      figure=fig2
-                      ),
+    html.Div([
+        html.H5('Alkoholkonsum in puren Litern weltweit nach Geschlecht; Darstellung mittels einer Bubblemap'),
+        dcc.Dropdown(
+            [
+                {
+                    "label": html.Div(
+                        [
+                            html.Img(src="/assets/images/sex_icons/female.svg", height=20),
+                            html.Div("Weiblich", style={'font-size': 15, 'padding-left': 10}),
+                        ], style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+                    ),
+                    "value": "FMLE",
+                },
+                {
+                    "label": html.Div(
+                        [
+                            html.Img(src="assets/images/sex_icons/male.svg", height=20),
+                            html.Div("Männlich", style={'font-size': 15, 'padding-left': 10}),
+                        ], style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+                    ),
+                    "value": "MLE",
+                },
+                {
+                    "label": html.Div(
+                        [
+                            html.Img(src="assets/images/sex_icons/btsx.svg", height=20),
+                            html.Div("Beide Geschlechter", style={'font-size': 15, 'padding-left': 10}),
+                        ], style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+                    ),
+                    "value": "BTSX",
+                },
+            ],
+            id="DropdownSex_bubblemap_alcoholconsumption",
+            value="BTSX",
+            clearable=False,
+        ),
+        dcc.Graph(id='bubblemap_alcoholconsumption'),
+    ]),
 
-        ]),
-        html.Div([
-            dcc.Graph(id='Korrelation2',
-                      figure=fig3
-                      ),
 
-        ]),
-
-        html.Div([
-            html.H4('Scatter Plot mit Country Population of 2016, y-Achse dementia rate'),
-            dcc.Graph(id='Korrelation3',
-                      figure=fig6
-                      ),
-
-        ]),
-
-        html.Div([
-            html.H4('Scatter Plot mit Country Population of 2016, y-Achse BMI'),
-            dcc.Graph(id='Korrelation4',
-                      figure=fig7
-                      ),
-
-        ]),
 
 ])
+layout_scatter_page = html.Div([
+    html.H3('Eine Aufbereitung mittels Scatter Plots'),
+    html.Div([
+        html.H5('Auswertung über den Zusammenhang von Alkoholkonsum, '
+                'Demenz und Alzheimer Todesrate und Lebenserwartung'),
+        dcc.Graph(id='Korrelation',
+                  figure=fig2
+                  ),
 
+    ]),
+    html.Div([
+        html.H5('Auswertung über den Zusammenhang von Alkoholkonsum, Demenz und Alzheimer Todesrate und BMI'),
+        dcc.Graph(id='Korrelation2',
+                  figure=fig3
+                  ),
+
+    ]),
+
+    html.Div([
+        html.H5('Auswertung über den Zusammenhang von Alkoholkonsum, '
+                'Demenz und Alzheimer Todesrate und der Einwohnerzahl'),
+        dcc.Graph(id='Korrelation3',
+                  figure=fig6
+                  ),
+
+    ]),
+
+    html.Div([
+        html.H5('Auswertung über den Zusammenhang von Alkoholkonsum, BMI und Einwohnerzahl'),
+        dcc.Graph(id='Korrelation4',
+                  figure=fig7
+                  ),
+
+    ]),
+    dcc.Link('Zurück zur Startseite', href='/'),
+])
 layout_bar_page = html.Div([
-    html.H3('Eine Aufbereitung mittels Balkendiagrammen'),
+    html.H3('Eine Aufbereitung mittels Bar Plots'),
     html.Div([
         dcc.Dropdown(
             id="DropdownSex_alcohol_consumption_per_continent",
@@ -189,7 +271,25 @@ app.validation_layout = html.Div([
     url_bar_and_content_div,
     index_page,
     layout_bar_page,
+    layout_scatter_page,
 ])
+
+
+# Index Page Callbacks
+@app.callback(
+    Output("heatmap_alcoholconsumption", "figure"),
+    Input("DropdownSex_heatmap_alcoholconsumption", "value"))
+def update_heatmap_alcoholconsumption(sex):
+    fig = w.heatmaps.get_heatmap_alcoholconsumption(df_alcohol_consumption, sex)
+    return fig
+
+
+@app.callback(
+    Output("bubblemap_alcoholconsumption", "figure"),
+    Input("DropdownSex_bubblemap_alcoholconsumption", "value"))
+def update_heatmap_alcoholconsumption(sex):
+    fig = w.heatmaps.get_bubblemap_alcoholconsumtion(df_alcohol_consumption, sex)
+    return fig
 
 # Bar Page Callbacks
 @app.callback(
@@ -206,6 +306,8 @@ def update_alcohol_consumption_barchart_per_continent(sex):
 def display_page(pathname):
     if pathname == '/page-bar':
         return layout_bar_page
+    if pathname == '/page-scatter':
+        return layout_scatter_page
     else:
         return index_page
 

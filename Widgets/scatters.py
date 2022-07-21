@@ -6,7 +6,12 @@ import plotly.express as px
 import numpy as np
 #from numpy import ma
 
-
+# Auswertung über den Zusammenhang von Alkoholkonsum, Demenz und Alzheimer Todesrate und Lebenserwartung
+# x-Achse: Alkoholkonsum
+# y-Achse: Demenz und Alzehimer Todes Rate
+# Bubble Größe: Lebenserwartung
+# Bubble Farbe: Kontinentzordnung
+# einzelner Bubble: Land
 def get_scatter_alcohol_demalz_hale_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_hale):
     # sub_df_alcohol_consumption = df_alcohol_consumption.rename(columns={"SpatialDim": "Country"})
     df_hale = df_hale.rename(columns={"SpatialDim": "Country"})
@@ -44,7 +49,12 @@ def get_scatter_alcohol_demalz_hale_scatter(df_alcohol_consumption, df_alz_dem_d
                      color='Continent', size='HALE')
     return fig
 
-
+# Auswertung über den Zusammenhang von Alkoholkonsum, Demenz und Alzheimer Todesrate und BMI
+# x-Achse: Alkoholkonsum
+# y-Achse: Demenz und Alzehimer Todes Rate
+# Bubble Größe: BMI
+# Bubble Farbe: Kontinentzordnung
+# einzelner Bubble: Land
 def get_scatter_alcohol_demalz_bmi_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_bmi):
     # sub_df_alcohol_consumption = df_alcohol_consumption.rename(columns={"SpatialDim": "Country"})
     df_bmi = df_bmi[["SpatialDim", "TimeDim", "Dim1", "NumericValue"]].rename(columns={"SpatialDim": "Country",
@@ -76,7 +86,12 @@ def get_scatter_alcohol_demalz_bmi_scatter(df_alcohol_consumption, df_alz_dem_de
 
     return fig
 
-
+# Auswertung über den Zusammenhang von Alkoholkonsum, Demenz und Alzheimer Todesrate und der Einwohnerzahl
+# x-Achse: Alkoholkonsum
+# y-Achse: Demenz und Alzheimer Todes Rate
+# Bubble Größe: Population logarithmisch
+# Bubble Farbe: Kontinentzuordnung
+# einzelner Bubble: Land
 def get_scatter_alcohol_population_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_pop):
 
     # sub_df_alcohol_consumption = df_alcohol_consumption.rename(columns={"SpatialDim": "Country"})
@@ -110,7 +125,12 @@ def get_scatter_alcohol_population_scatter(df_alcohol_consumption, df_alz_dem_de
 
     return fig
 
-
+# Auswertung über den Zusammenhang von Alkoholkonsum, BMI und Einwohnerzahl
+# x-Achse: Alkoholkonsum
+# y-Achse: BMI
+# Bubble Größe: Population logarithmisch
+# Bubble Farbe: Kontinentzordnung
+# einzelner Bubble: Land
 def get_scatter_alcohol_bmi_population_scatter(df_alcohol_consumption, df_bmi, df_pop):
 
     df_pop = df_pop[["Country Name", "Country Code", "2016"]].rename(columns={"Country Code": "Country",
