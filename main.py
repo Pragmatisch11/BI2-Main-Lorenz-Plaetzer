@@ -66,11 +66,48 @@ def get_country_population_df():
     # https://data.worldbank.org/indicator/SP.POP.TOTL
     return r.get_dataframe_by_csv("./Country_Population.csv")
 
+def dropdown_sex(p_id):
+    return html.Div([
+        dcc.Dropdown(
+            [
+                {
+                    "label": html.Div(
+                        [
+                            html.Img(src="/assets/images/sex_icons/female.svg", height=20),
+                            html.Div("Weiblich", style={'font-size': 15, 'padding-left': 10}),
+                        ], style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+                    ),
+                    "value": "FMLE",
+                },
+                {
+                    "label": html.Div(
+                        [
+                            html.Img(src="assets/images/sex_icons/male.svg", height=20),
+                            html.Div("Männlich", style={'font-size': 15, 'padding-left': 10}),
+                        ], style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+                    ),
+                    "value": "MLE",
+                },
+                {
+                    "label": html.Div(
+                        [
+                            html.Img(src="assets/images/sex_icons/btsx.svg", height=20),
+                            html.Div("Beide Geschlechter", style={'font-size': 15, 'padding-left': 10}),
+                        ], style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
+                    ),
+                    "value": "BTSX",
+                },
+            ],
+            id=p_id,
+            value="BTSX",
+            clearable=False,
+        ),
+    ])
 
 df_alcohol_consumption = get_alcohol_consumption_df()
 df_alcohol_consumption = df_alcohol_consumption.rename(columns={"SpatialDim": "Country"})
 df_alcohol_consumption = dfh.add_continent_by_iso3_code(df_alcohol_consumption)
-
+df_alcohol_consumption = dfh.add_full_country_name_by_iso3_code(df_alcohol_consumption)
 
 # pandas.set_option('display.max_rows', df_alcohol_consumption.shape[0] + 1, 'display.max_columns', df_alcohol_consumption.shape[0] + 1)
 
@@ -102,7 +139,7 @@ fig3 = w.scatters.get_scatter_alcohol_demalz_bmi_scatter(df_alcohol_consumption,
 
 fig6 = w.scatters.get_scatter_alcohol_population_scatter(df_alcohol_consumption, df_alz_dem_deathrate_b, df_pop)
 
-fig7 = w.scatters.get_scatter_alcohol_bmi_population_scatter(df_alcohol_consumption, df_bmi, df_pop)
+#fig7 = w.scatters.test_get_scatter_alcohol_bmi_population_scatter(df_alcohol_consumption, df_bmi, df_pop, "1960")
 
 
 #### Dash Server
@@ -127,40 +164,8 @@ index_page = html.Div([
     ##Graph 1
     html.Div([
         html.H5('Alkoholkonsum in puren Litern weltweit nach Geschlecht; Darstellung mittels einer Heatmap'),
-        dcc.Dropdown(
-            [
-                {
-                    "label": html.Div(
-                        [
-                            html.Img(src="/assets/images/sex_icons/female.svg", height=20),
-                            html.Div("Weiblich", style={'font-size': 15, 'padding-left': 10}),
-                        ], style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-                    ),
-                    "value": "FMLE",
-                },
-                {
-                    "label": html.Div(
-                        [
-                            html.Img(src="assets/images/sex_icons/male.svg", height=20),
-                            html.Div("Männlich", style={'font-size': 15, 'padding-left': 10}),
-                        ], style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-                    ),
-                    "value": "MLE",
-                },
-                {
-                    "label": html.Div(
-                        [
-                            html.Img(src="assets/images/sex_icons/btsx.svg", height=20),
-                            html.Div("Beide Geschlechter", style={'font-size': 15, 'padding-left': 10}),
-                        ], style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-                    ),
-                    "value": "BTSX",
-                },
-            ],
-            id="DropdownSex_heatmap_alcoholconsumption",
-            value="BTSX",
-            clearable=False,
-        ),
+        dropdown_sex("DropdownSex_heatmap_alcoholconsumption"),
+
         dcc.Graph(
             id='heatmap_alcoholconsumption',
         ),
@@ -171,40 +176,7 @@ index_page = html.Div([
 
     html.Div([
         html.H5('Alkoholkonsum in puren Litern weltweit nach Geschlecht; Darstellung mittels einer Bubblemap'),
-        dcc.Dropdown(
-            [
-                {
-                    "label": html.Div(
-                        [
-                            html.Img(src="/assets/images/sex_icons/female.svg", height=20),
-                            html.Div("Weiblich", style={'font-size': 15, 'padding-left': 10}),
-                        ], style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-                    ),
-                    "value": "FMLE",
-                },
-                {
-                    "label": html.Div(
-                        [
-                            html.Img(src="assets/images/sex_icons/male.svg", height=20),
-                            html.Div("Männlich", style={'font-size': 15, 'padding-left': 10}),
-                        ], style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-                    ),
-                    "value": "MLE",
-                },
-                {
-                    "label": html.Div(
-                        [
-                            html.Img(src="assets/images/sex_icons/btsx.svg", height=20),
-                            html.Div("Beide Geschlechter", style={'font-size': 15, 'padding-left': 10}),
-                        ], style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center'}
-                    ),
-                    "value": "BTSX",
-                },
-            ],
-            id="DropdownSex_bubblemap_alcoholconsumption",
-            value="BTSX",
-            clearable=False,
-        ),
+        dropdown_sex("DropdownSex_bubblemap_alcoholconsumption"),
         dcc.Graph(id='bubblemap_alcoholconsumption'),
     ]),
 
@@ -240,28 +212,29 @@ layout_scatter_page = html.Div([
 
     html.Div([
         html.H5('Auswertung über den Zusammenhang von Alkoholkonsum, BMI und Einwohnerzahl'),
-        dcc.Graph(id='Korrelation4',
-                  figure=fig7
-                  ),
+        dcc.Slider(1960, 2021, 5, value=2016, id='SliderYear_scatter_alcohol_bmi_population_scatter'),
+        dcc.Graph(id='scatter_alcohol_bmi_population_scatter'),
 
     ]),
+
+
+
     dcc.Link('Zurück zur Startseite', href='/'),
 ])
 layout_bar_page = html.Div([
     html.H3('Eine Aufbereitung mittels Bar Plots'),
     html.Div([
-        dcc.Dropdown(
-            id="DropdownSex_alcohol_consumption_per_continent",
-            options={
-                'BTSX': 'M und W',
-                'FMLE': 'W',
-                'MLE': 'M' },
-            value="BTSX",
-            clearable=False,
-        ),
+        html.H5('Alkoholkonsum aufgeteilt nach Kontinent'),
+        dropdown_sex('DropdownSex_alcohol_consumption_per_continent'),
         dcc.Graph(id='Bar_alcohol_consumption_per_continent'),
-
     ]),
+
+    html.Div([
+        html.H5('Top 5 und Last 5 Länder hinsichtlich des Alkoholkonsum in Litern'),
+        dropdown_sex('DropdownSex_top_and_last_alcohol_consumption_rank_per_country'),
+        dcc.Graph(id='Bar_top_and_last_alcohol_consumption_rank_per_country'),
+    ]),
+
     dcc.Link('Zurück zur Startseite', href='/'),
 ])
 
@@ -296,8 +269,23 @@ def update_heatmap_alcoholconsumption(sex):
     Output("Bar_alcohol_consumption_per_continent", "figure"),
     Input("DropdownSex_alcohol_consumption_per_continent", "value"))
 def update_alcohol_consumption_barchart_per_continent(sex):
-    fig5 = w.bars.get_alcohol_consumption_barchart_per_continent(df_alcohol_consumption, sex)
-    return fig5
+    fig = w.bars.get_alcohol_consumption_barchart_per_continent(df_alcohol_consumption, sex)
+    return fig
+
+@app.callback(
+    Output("Bar_top_and_last_alcohol_consumption_rank_per_country", "figure"),
+    Input("DropdownSex_top_and_last_alcohol_consumption_rank_per_country", "value"))
+def update_top_and_last_alcohol_consumption_rank_per_country(sex):
+    fig = w.bars.get_top_and_last_alcohol_consumption_rank_per_country(df_alcohol_consumption, sex)
+    return fig
+
+# Scatter Page Callback
+@app.callback(
+    Output("scatter_alcohol_bmi_population_scatter", "figure"),
+    Input("SliderYear_scatter_alcohol_bmi_population_scatter", "value"))
+def update_scatter_alcohol_bmi_population_scatter(year):
+    fig = w.scatters.get_scatter_alcohol_bmi_population_scatter(df_alcohol_consumption, df_bmi, df_pop, str(year))
+    return fig
 
 # Update the index
 @app.callback(
