@@ -166,14 +166,18 @@ def get_scatter_alcohol_bmi_population_scatter(df_alcohol_consumption, df_bmi, d
 
 # Test Slider Nils
 def get_scatter_alcohol_bmi_population_scatter(df_alcohol_consumption, df_bmi, df_pop, year):
+
     df_pop = df_pop[["Country Name", "Country Code", year]].rename(columns={"Country Code": "Country",
                                                                             f"{year}": f"Country Population of {year}"})
 
     df_bmi = df_bmi[["SpatialDim", "TimeDim", "Dim1", "NumericValue"]].rename(columns={"SpatialDim": "Country",
                                                                                        "NumericValue": "BMI"})
 
+
+
     scatter = pandas.merge(df_alcohol_consumption.query('Dim1 == "BTSX"')[["Country", "NumericValue", "Continent"]],
                            df_pop, on="Country")
+    scatter[f'Country Population of {year} (in Mio)'] = round(scatter[f'Country Population of {year}'] / 1000000, 2)
     scatter[f'Country Population of {year}'] = scatter[f'Country Population of {year}'].fillna(0)
     scatter[f'Country Population of {year}'] = np.log2(scatter[f'Country Population of {year}'],
                                                     out=np.zeros_like(scatter[f'Country Population of {year}']),
@@ -188,6 +192,7 @@ def get_scatter_alcohol_bmi_population_scatter(df_alcohol_consumption, df_bmi, d
     scatter = scatter.dropna()
 
     fig = px.scatter(scatter, x='Alcoholconsumption', y='BMI', color='Continent',
-                     size=f'Country Population of {year}', hover_data=["Country Name"])
-
+                     size=f'Country Population of {year}', hover_data=[f'Country Population of {year} (in Mio)'],
+                     hover_name="Country Name")
+    #fig = fig.update_traces(hovertemplate='Continent: %{'Continent'} <br>Country Population in Mio: %{f'Country Population of {year} (in Mio)'}' )
     return fig
