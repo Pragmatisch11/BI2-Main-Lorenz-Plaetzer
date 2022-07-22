@@ -212,7 +212,8 @@ layout_scatter_page = html.Div([
 
     html.Div([
         html.H5('Auswertung über den Zusammenhang von Alkoholkonsum, BMI und Einwohnerzahl'),
-        dcc.Slider(1960, 2021, 5, value=2016, id='SliderYear_scatter_alcohol_bmi_population_scatter'),
+        dcc.Slider(1960, 2021, 1, value=2016, id='SliderYear_scatter_alcohol_bmi_population_scatter',
+                   marks={key: str(key) for key in range(1960, 2021, 5)}),
         dcc.Graph(id='scatter_alcohol_bmi_population_scatter'),
 
     ]),
