@@ -179,9 +179,9 @@ def get_scatter_alcohol_bmi_population_scatter(df_alcohol_consumption, df_bmi, d
                            df_pop, on="Country")
     scatter[f'Country Population of {year} (in Mio)'] = round(scatter[f'Country Population of {year}'] / 1000000, 2)
     scatter[f'Country Population of {year}'] = scatter[f'Country Population of {year}'].fillna(0)
-    scatter[f'Country Population of {year}'] = np.log2(scatter[f'Country Population of {year}'],
-                                                    out=np.zeros_like(scatter[f'Country Population of {year}']),
-                                                    where=(scatter[f'Country Population of {year}'] != 0))
+    #scatter[f'Country Population of {year}'] = np.log2(scatter[f'Country Population of {year}'],
+    #                                                out=np.zeros_like(scatter[f'Country Population of {year}']),
+    #                                                where=(scatter[f'Country Population of {year}'] != 0))
 
     scatter = scatter.rename(columns={"NumericValue": "Alcoholconsumption"})
 
@@ -194,5 +194,7 @@ def get_scatter_alcohol_bmi_population_scatter(df_alcohol_consumption, df_bmi, d
     fig = px.scatter(scatter, x='Alcoholconsumption', y='BMI', color='Continent',
                      size=f'Country Population of {year}', hover_data=[f'Country Population of {year} (in Mio)'],
                      hover_name="Country Name")
+
+    #fig = fig.update_traces(marker_sizeref= 2 * max(f'Country Population of {year}')/(40. **2), selector=dict(type='scatter'))
     #fig = fig.update_traces(hovertemplate='Continent: %{'Continent'} <br>Country Population in Mio: %{f'Country Population of {year} (in Mio)'}' )
     return fig

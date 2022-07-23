@@ -212,10 +212,10 @@ layout_scatter_page = html.Div([
 
     html.Div([
         html.H5('Auswertung über den Zusammenhang von Alkoholkonsum, BMI und Einwohnerzahl'),
+        dcc.Graph(id='scatter_alcohol_bmi_population_scatter'),
         dcc.Slider(1960, 2021, 1, value=2016, id='SliderYear_scatter_alcohol_bmi_population_scatter',
                    marks={key: str(key) for key in range(1960, 2021, 5)},
-                   tooltip={"placement": "bottom", "always_visible": True}),
-        dcc.Graph(id='scatter_alcohol_bmi_population_scatter'),
+                   tooltip={"placement": "bottom", "always_visible": True})
 
     ]),
 
@@ -287,6 +287,8 @@ def update_top_and_last_alcohol_consumption_rank_per_country(sex):
     Input("SliderYear_scatter_alcohol_bmi_population_scatter", "value"))
 def update_scatter_alcohol_bmi_population_scatter(year):
     fig = w.scatters.get_scatter_alcohol_bmi_population_scatter(df_alcohol_consumption, df_bmi, df_pop, str(year))
+    #fig = fig.update_traces(marker_sizeref=2 * max(f'Country Population of {year}') / (40. ** 2),
+    #                        selector=dict(type='scatter'))
     return fig
 
 # Update the index

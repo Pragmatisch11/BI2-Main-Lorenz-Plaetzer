@@ -38,3 +38,12 @@ def get_top_and_last_alcohol_consumption_rank_per_country(df, sex):
     fig = px.bar(df, x="Country", y="purer Alkoholkonsum in Litern",
                  hover_data=["CountryName", "purer Alkoholkonsum in Litern"])
     return fig
+
+def get_pie_alcohol_consumption_per_country(df, sex):
+    df = df.rename(columns={"SpatialDim": "Country",
+                            "NumericValue": "purer Alkoholkonsum in Litern"})
+    df.loc[df['purer Alkoholkonsum in Litern'] ]
+
+    df = df.query('Dim1 == "%s"' % sex)
+
+    return
